@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 #include <ctime> // For handling dates
+#include <fstream> // For file handling
+#include <limits> // For numeric limits
+
 using namespace std;
 
 // Define structure for maintenance tasks
@@ -140,14 +143,33 @@ public:
     double tinhTienThue() const override {
         return KhachHang::tinhTienThue() * (1 - discountRate);
     }
+
+    // Method to calculate the original rental cost before discount
+    double tinhTienThueGoc() const {
+        return KhachHang::tinhTienThue();
+    }
 };
 
 // Function to print a bill with borders
 void inHoaDon(const KhachHang* kh) {
     cout << "-----------------------------------------" << endl;
     cout << "|               HÓA ĐƠN                 |" << endl;
-    cout<< "-----------------------------------------" << endl;
+    cout << "-----------------------------------------" << endl;
     kh->layThongTinKH();
+
+    double originalCost = kh->tinhTienThue();
+    double discountedCost = originalCost;
+
+    const KhachHangVIP* vipCustomer = dynamic_cast<const KhachHangVIP*>(kh);
+    if (vipCustomer) {
+        originalCost = vipCustomer->tinhTienThueGoc();
+        discountedCost = vipCustomer->tinhTienThue();
+        cout << "Tổng tiền thuê (trước giảm giá): $" << originalCost << endl;
+        cout << "Tổng tiền thuê sau giảm giá: $" << discountedCost << endl;
+    } else {
+        cout << "Tổng tiền thuê: $" << originalCost << endl;
+    }
+
     cout << "-----------------------------------------" << endl;
     char damage;
     cout << "Khách hàng có gây hư hỏng xe không (y/n)? ";
@@ -173,18 +195,55 @@ void inHoaDon(const KhachHang* kh) {
                 break;
         }
     }
-    double totalCost = kh->tinhTienThue() + insuranceCost;
+    double totalCost = discountedCost + insuranceCost;
     cout << "Phí bảo hiểm: $" << insuranceCost << endl;
     cout << "Tổng tiền phải trả: $" << totalCost << endl;
     cout << "-----------------------------------------" << endl;
 }
 
+// Function to read the password from a file
+string docMatKhauTuFile(const string& filePath) {
+    ifstream file(filePath);
+    string password;
+    if (file.is_open()) {
+        getline(file, password);
+        file.close();
+    } else {
+        cout << "Không thể mở file mật khẩu." << endl;
+    }
+    return password;
+}
+
+// Function to check if the entered password is correct
+bool kiemTraMatKhau(const string& correctPassword) {
+    string enteredPassword;
+    cout << "*****************************************" << endl;
+    cout << "*                                       *" << endl;
+    cout << "*       Nhập mật khẩu để truy cập       *" << endl;
+    cout << "*                                       *" << endl;
+    cout << "*****************************************" << endl;
+    cout << "* Mật khẩu: ";
+    cin >> enteredPassword;
+    cout << "*****************************************" << endl;
+    return enteredPassword == correctPassword;
+}
+
 int main() {
+    string filePath = "D:\\pb\\pass.txt";
+    string correctPassword = docMatKhauTuFile(filePath);
+
+    if (!kiemTraMatKhau(correctPassword)) {
+        cout << "*****************************************" << endl;
+        cout << "* Mật khẩu không chính xác. Thoát chương trình. *" << endl;
+        cout << "*****************************************" << endl;
+        return 1;
+    }
+
     vector<KhachHang*> danhSachKH; // Use vector to manage the list of customers
 
     // Menu options
     cout << "-----------------------------------------" << endl;
-    cout << "|             MENU LỰA CHỌN             |" << endl;
+    cout << "|        CHƯƠNG TRÌNH QUẢN LÝ THUÊ XE        |" << endl;
     cout << "-----------------------------------------" << endl;
     cout << "|  1. Thêm khách hàng                   |" << endl;
     cout << "|  2. Thêm khách hàng VIP               |" << endl;
@@ -192,7 +251,7 @@ int main() {
     cout << "|  4. Hiển thị danh sách khách hàng     |" << endl;
     cout << "|  0. Thoát                             |" << endl;
     cout << "-----------------------------------------" << endl;
-    cout << "Nhập lựa chọn của bạn: ";
+
     int luaChon;
     do {
         cout << "Nhập lựa chọn của bạn: ";
@@ -286,8 +345,8 @@ int main() {
                 break;
             }
             case 0:
-                cout << "Thoát chương trình, chúc bạn một ngày tốt lành." << endl;
-                break;
+                cout << "Thoát chương trình, chúc bạn một ngày tốt lành";
+break;
             default:
                 cout << "Lựa chọn không hợp lệ!" << endl;
                 break;
@@ -301,4 +360,3 @@ int main() {
 
     return 0;
 }
-
