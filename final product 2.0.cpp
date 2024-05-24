@@ -23,6 +23,7 @@ struct Vehicle {
     bool available;
     string condition;
     vector<MaintenanceTask> maintenanceSchedule; // Move maintenance schedule here
+
     Vehicle(string lp, string b, string c, bool av, string cond)
         : licensePlate(lp), brand(b), color(c), available(av), condition(cond) {}
 };
@@ -100,6 +101,7 @@ protected:
     tm ReturnDate;
     Vehicle* car;
 public:
+        
     // Constructor to initialize customer details
     Customer(string Name, string Address, string PhoneNumber, string Brand,string Reason, Car* carType, tm RentalDate, tm ReturnDate, Vehicle* car) {
         this->Name = Name;
@@ -124,6 +126,13 @@ public:
     tm getRentalDate() const { return RentalDate; }
     tm getReturnDate() const { return ReturnDate; }
 
+     // Setter methods
+    void setName(const string& name) { Name = name; }
+    void setAddress(const string& address) { Address = address; }
+    void setPhoneNumber(const string& phoneNumber) { PhoneNumber = phoneNumber; }
+    void setReason(const string& reason) { Reason = reason; }
+    void setReturnDate(const tm& returnDate) { ReturnDate = returnDate; }
+
     // Method to display customer information
     virtual void GetCustomerInfo() const {
         cout << "Name: " << Name << endl;
@@ -147,6 +156,11 @@ public:
         return seconds / (60 * 60 * 24); // Convert seconds to days
     }
 
+    void extendRentalPeriod(const tm& newReturnDate) {
+        setReturnDate(newReturnDate);
+        cout << "Rental period extended successfully." << endl;
+    }
+
     // Method to calculate the rental cost
     virtual double calculateRentalCost() const {
         return RentalDays() * carType->dailyRentalRate();
@@ -156,6 +170,13 @@ public:
         car->available = true;
         delete carType;
     } // Virtual destructor for proper cleanup
+
+    void changeCustomerInfo(const string& newName, const string& newAddress, const string& newPhoneNumber) {
+        setName(newName);
+        setAddress(newAddress);
+        setPhoneNumber(newPhoneNumber);
+        cout << "Customer information updated successfully." << endl;
+    }
 };
 
 // Derived class to represent a VIP customer
@@ -247,14 +268,14 @@ bool checkPassword() {
     }
 
     string enteredPassword;
-    cout << "*****************************************" << endl;
-    cout << "*                                       *" << endl;
-    cout << "*      Enter the password to access     *" << endl;
-    cout << "*                                       *" << endl;
-    cout << "*****************************************" << endl;
+    cout << "#========================================#" << endl;
+    cout << "#                                        #" << endl;
+    cout << "#      Enter the password to access      #" << endl;
+    cout << "#                                        #" << endl;
+    cout << "#========================================#" << endl;
     cout << "| Password : ";
     cin >> enteredPassword;
-     cout << "*****************************************" << endl;
+    cout << "=========================================" << endl;
     return enteredPassword == correctPassword;
 }
 
@@ -408,6 +429,8 @@ void saveDeletedCustomerInfo(const Customer* customer, const string& filePath) {
     }
 }
 
+
+
 int main() {
    
     int attempts = 0;
@@ -415,26 +438,31 @@ int main() {
     while (attempts < 3 && !isAuthenticated) {
         if (checkPassword()) {
             isAuthenticated = true;
-            cout << "*****************************************" << endl;
-             cout << "*****************************************" << endl;
-            cout << "Password correct. You have successfully logged in.\n";
-             cout << "*****************************************" << endl;
-              cout << "*****************************************" << endl;
+            cout << "@------------------------------------------------------@" << endl;
+            cout << "|                                                      |" << endl;
+            cout << "|  Password correct. You have successfully logged in.  | \n";
+            cout << "|                                                      |" << endl;
+            cout << "@------------------------------------------------------@" << endl;
+            cout << "========================================================" << endl;
+
         } else {
             attempts++;
-             cout << "*****************************************" << endl;
-              cout << "*****************************************" << endl;
-            cout << "Incorrect password, please try again.\n";
-             cout << "*****************************************" << endl;
-              cout << "*****************************************" << endl;
+            cout << "@------------------------------------------------------@" << endl;
+            cout << "|                                                      |" << endl;
+            cout << "|                  Incorrect password                  |\n";      
+            cout << "|                                                      |" << endl;
+            cout << "@------------------------------------------------------@" << endl;
+            cout << "========================================================" << endl;
         }
     }
     if (!isAuthenticated) {
-         cout << "*****************************************" << endl;
-          cout << "*****************************************" << endl;
-        cout << "You have entered the wrong password more than 3 times. Access denied.\n";
-         cout << "*****************************************" << endl;
-          cout << "*****************************************" << endl;
+        cout << "@---------------------------------------------------------------------------@" << endl;
+        cout << "|                                                                           |" << endl;
+        cout << "|   You have entered the wrong password more than 3 times. Access denied.   |\n";
+        cout << "|                                                                           |" << endl;
+        cout << "@---------------------------------------------------------------------------@" << endl;
+        cout << "=============================================================================" << endl;
+
         return 0;
     }
 
@@ -453,7 +481,9 @@ int main() {
     cout << "|  5. Display car List                   |" << endl;
     cout << "|  6. Add car maintainance               |" << endl;
     cout << "|  7. Delete car maintainance            |" << endl;
-    cout << "|  8. Display car maintanance list       |" << endl;  
+    cout << "|  8. Display car maintanance list       |" << endl;
+    cout << "|  9. Extend rental period               |" << endl; 
+    cout << "| 10. Change customer information        |" << endl;  
     cout << "|  0. Exit                               |" << endl;
     cout << "-----------------------------------------" << endl;
 
@@ -463,6 +493,7 @@ int main() {
         cin >> Choice;
         cin.ignore(); // Clear the newline character from the input buffer
         switch (Choice) {
+
             case 1: {
                 string Name, Address, PhoneNumber, Brand,Reason, carType4o7, licensePLate;
                 Car* carType;
@@ -482,6 +513,7 @@ int main() {
                 cout << "Enter lisence plate number: ";
                 getline(cin, licensePLate);
                 car = findCar(VehicleList, licensePLate);
+
                 if (!car) {
                     cout << "The car is not available or invalid license plate number!" << endl;
                     break;
@@ -501,6 +533,7 @@ int main() {
                 CustomerList.push_back(new Customer(Name, Address, PhoneNumber, Brand,Reason, carType, RentalDate, ReturnDate, car));
                 break;
             }
+
             case 2: {
                 string Name, Address, PhoneNumber, Brand,Reason,  carType4o7, licensePLate;
                 Car* carType;
@@ -543,6 +576,7 @@ int main() {
                 CustomerList.push_back(new CustomerVIP(Name, Address, PhoneNumber, Brand, Reason, carType, RentalDate, ReturnDate, car, discountRate));
                 break;
             }
+
             case 3: {
                 int Position;
                 cout << "Enter the position of the customer you want to delete: ";
@@ -558,6 +592,7 @@ int main() {
                 }
                 break;
             }
+
             case 4: {
                 if (CustomerList.empty()) {
                     cout << "Customer list is empty!" << endl;
@@ -573,22 +608,88 @@ int main() {
                 }
                 break;
             }
+
             case 5: {
                 DisplayCarList(VehicleList);
                 break;
             }
+
             case 6: {
                 addCarMaintenance(VehicleList);
                 break;
             }
+
             case 7: {
                 deleteCarMaintenance(VehicleList);
                 break;
             }
+
             case 8: { // New case for displaying maintenance list
                 displayCarMaintenance(VehicleList);
             break;
-        }
+            }
+
+            case 9: { // Extend rental period
+            int position;
+            cout << "Enter the position of the customer you want to extend the rental period for: ";
+            cin >> position;
+            if (position >= 1 && position <= CustomerList.size()) {
+                tm newReturnDate = EnterDate("Enter new return date");
+                CustomerList[position - 1]->extendRentalPeriod(newReturnDate);
+            } else {
+                cout << "Invalid position!" << endl;
+            }
+            break;
+            }
+
+            case 10: { // Change customer information
+            int position;
+            cout << "Enter the position of the customer you want to change the information for: ";
+            cin >> position;
+            cin.ignore(); // Clear the input buffer
+                if (position >= 1 && position <= CustomerList.size()) {
+                    cout << "What information do you want to change?" << endl;
+                    cout << "1. Name" << endl;
+                    cout << "2. Address" << endl;
+                    cout << "3. Phone number" << endl;
+                    cout << "Enter your choice: ";
+                    int changeChoice;
+                    cin >> changeChoice;
+                    cin.ignore(); // Clear the input buffer
+                    switch (changeChoice) {
+                        case 1: { // Change name
+                            string newName;
+                            cout << "Enter new name: ";
+                            getline(cin, newName);
+                            CustomerList[position - 1]->setName(newName);
+                            cout << "Name changed successfully." << endl;
+                            break;
+                        }
+                        case 2: { // Change address
+                            string newAddress;
+                            cout << "Enter new address: ";
+                            getline(cin, newAddress);
+                            CustomerList[position - 1]->setAddress(newAddress);
+                            cout << "Address changed successfully." << endl;
+                            break;
+                        }
+                        case 3: { // Change phone number
+                            string newPhoneNumber;
+                            cout << "Enter new phone number: ";
+                            getline(cin, newPhoneNumber);
+                            CustomerList[position - 1]->setPhoneNumber(newPhoneNumber);
+                            cout << "Phone number changed successfully." << endl;
+                            break;
+                        }
+                        default:
+                            cout << "Invalid choice!" << endl;
+                            break;
+                    }
+                } else {
+                    cout << "Invalid position!" << endl;
+                }
+                break;
+            }
             case 0:
                 cout << "Exit the program, wish you a good day" << endl;
                 break;
