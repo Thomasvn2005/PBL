@@ -39,7 +39,7 @@ public:
     virtual ~Car() {} // Virtual destructor for proper cleanup
     string getcarType() const { return carType; }
 
-    // Method to add maintenance task to the schedule
+    
     void addMaintenanceTask(const string& description, const tm& dueDate) {
         maintenanceSchedule.push_back(MaintenanceTask(description, dueDate));
     }
@@ -171,10 +171,11 @@ public:
         delete carType;
     } // Virtual destructor for proper cleanup
 
-    void changeCustomerInfo(const string& newName, const string& newAddress, const string& newPhoneNumber) {
+    void changeCustomerInfo(const string& newName, const string& newAddress, const string& newPhoneNumber, const string& newReason) {
         setName(newName);
         setAddress(newAddress);
         setPhoneNumber(newPhoneNumber);
+        setReason(newReason);
         cout << "Customer information updated successfully." << endl;
     }
 };
@@ -415,20 +416,44 @@ void displayCarMaintenance(const vector<Vehicle>& VehicleList) {
 void saveDeletedCustomerInfo(const Customer* customer, const string& filePath) {
     ofstream file(filePath, ios::app);
     if (file.is_open()) {
-        file << "Name: " << customer->getName() << endl;
-        file << "Address: " << customer->getAddress() << endl;
-        file << "Phone Number: " << customer->getPhoneNumber() << endl;
-        file << "Desired Brand: " << customer->getBrand() << endl;
-        file << "Vehicle Type: " << customer->getVehicle()->getcarType() << endl;
-        file << "Rental Date: " << customer->getRentalDate().tm_mday << "/" << customer->getRentalDate().tm_mon + 1 << "/" << customer->getRentalDate().tm_year + 1900 << endl;
-        file << "Return Date: " << customer->getReturnDate().tm_mday << "/" << customer->getReturnDate().tm_mon + 1 << "/" << customer->getReturnDate().tm_year + 1900 << endl;
+
+        file << "===================================================================CAR RENTAL AGREEMENT============================================================================"<<endl;
+        file << "|                                                                   RENTER INFORMATION                                                                            |"<<endl;
+        file << "| Name: " << customer->getName() <<"                                                                                                                              |"<< endl;
+        file << "| Address: " << customer->getAddress() <<"                                                                                                                        |"<< endl;
+        file << "| Phone Number: " << customer->getPhoneNumber() <<"                                                                                                               |"<< endl;
+        file << "| Desired Brand: " << customer->getBrand() <<"                                                                                                                    |"<< endl;
+        file << "| Vehicle Type: " << customer->getVehicle()->getcarType()<<"                                                                                                      |"<< endl;
+        file << "| Rental Date: " << customer->getRentalDate().tm_mday << "/" << customer->getRentalDate().tm_mon + 1 << "/" << customer->getRentalDate().tm_year + 1900 <<"       |"<< endl;
+        file << "| Return Date: " << customer->getReturnDate().tm_mday << "/" << customer->getReturnDate().tm_mon + 1 << "/" << customer->getReturnDate().tm_year + 1900 <<"       |"<< endl;
+        file << "-------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+        file << "|                                                                    OWNER INFORMATION     "<<"                                                                   |"<< endl;
+        file << "| Name: Nguyen Hoang Bach"<<"                                                                                                                                     |"<< endl;
+        file << "| Address: 54 Nguyen Luong Bang"<<"                                                                                                                               |"<< endl;
+        file << "| Phone Number: 555-1234"<<"                                                                                                                                      |"<< endl;
+        file << "-------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+        file << "|                                                                          TERMS                                                                                  |"<<endl;
+        file << "| Terms A,B,C,D,etc"<<"                                                                                                                                           |"<< endl;
+        file << "| By signing contract,"<<"                                                                                                                                        |"<< endl;
+        file << "| both parties confirm their understanding and acceptance of these terms and conditions."<<"                                                                      |"<< endl;
+        file << "-------------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+
+        double originalCost = customer->calculateRentalCost();
+        double discountedCost = originalCost;
+
+        const CustomerVIP* vipCustomer = dynamic_cast<const CustomerVIP*>(customer);
+        if (vipCustomer) {
+            originalCost = vipCustomer->calculateBaseRentalCost();
+            discountedCost = vipCustomer->calculateRentalCost();
+        }
+
+        file << "Total Rental Cost: $" << discountedCost << endl;
         file << "-----------------------------------------" << endl;
         file.close();
     } else {
         cout << "Unable to open file to save deleted customer information." << endl;
-    }
+    }pas
 }
-
 
 
 int main() {
@@ -652,6 +677,7 @@ int main() {
                     cout << "1. Name" << endl;
                     cout << "2. Address" << endl;
                     cout << "3. Phone number" << endl;
+                    cout << "4. Reason" << endl;
                     cout << "Enter your choice: ";
                     int changeChoice;
                     cin >> changeChoice;
@@ -681,6 +707,14 @@ int main() {
                             cout << "Phone number changed successfully." << endl;
                             break;
                         }
+                        case 4: { // Change reason for renting
+                            string newReason;
+                            cout << "Enter new reason for renting: ";
+                            getline(cin, newReason);
+                            CustomerList[position - 1]->setReason(newReason);
+                            cout << "Reason for renting changed successfully." << endl;
+                            break;
+            }
                         default:
                             cout << "Invalid choice!" << endl;
                             break;
